@@ -1,19 +1,12 @@
+import ui.ui_manager
+
+
 class GameController:
 
     def __init__(self):
         pass
 
-    def join_table(self):
-        pass
+    def update_player_info(self, data):
+        ui.ui_manager.update_player_info(data)
 
-    def action(self):
-        pass
-
-    def fold(self):
-        pass
-
-    def check(self):
-        pass
-
-    def raise(self):
-        pass
+    def update_game_info(self): pass
