@@ -42,5 +42,4 @@ def init_dispatcher():
 if __name__ == '__main__':
     init_net_client()
     init_dispatcher()
-
     ui_manager.init_ui()

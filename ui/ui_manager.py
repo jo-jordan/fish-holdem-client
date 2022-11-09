@@ -1,4 +1,5 @@
 import curses
+from ui.cards import CardMap
 
 main_screen = None
 game_info_window = None
@@ -29,9 +30,9 @@ def __init_game_info_window():
     game_info_window = curses.newwin(6, 96, 0, 0)
     # Clear screen
     game_info_window.clear()
-    game_info_window.addstr(0, 1, 'Bet: {}/{} points\n'.format(1, 2))
-    game_info_window.addstr(1, 1, 'Common cards: {}, {}, {}'.format('Diamonds-A', 'Spades-J', 'Hearts-10'))
-    game_info_window.addstr(2, 1, 'Pot: {} points'.format('887'))
+    game_info_window.addstr(1, 1, 'Bet: ?/? points')
+    game_info_window.addstr(2, 1, 'Common cards: ?')
+    game_info_window.addstr(3, 1, 'Pot: 0 points')
 
     game_info_window.border('|', '|', '-', '-', '+', '+', '+', '+')
     game_info_window.refresh()
@@ -40,12 +41,9 @@ def __init_game_info_window():
 def __init_player_info_window():
     global player_info_window
     player_info_window = curses.newwin(14, 96, 7, 0)
+    player_info_window.keypad(False)
     player_info_window.clear()
-    player_info_window.addstr(0, 1, 'Player {}: {}'.format('Tom Dwan', 'Check'))
-    player_info_window.addstr(1, 1, 'Player {}: {}'.format('Garret', 'Bet 200 points'))
-    player_info_window.addstr(2, 1, 'Player {}: {}'.format('Xi jinping', 'Raise to 88888 points'))
-    player_info_window.addstr(3, 1, 'Player {}: {}'.format('Li Keqiang', 'Fold'))
-    player_info_window.addstr(4, 1, 'Player {}: {}'.format('Li Qiang', '<--'))
+    player_info_window.addstr(1, 1, 'Wait more players to start game!')
 
     player_info_window.border('|', '|', '-', '-', '+', '+', '+', '+')
     player_info_window.refresh()
@@ -81,17 +79,39 @@ def init_ui():
     __init_user_window()
 
 
+def update_game_info(data):
+    if game_info_window is None:
+        return
+
+    game_info_window.clear()
+    bet_rate = data["bet_rate"]
+    total_pot = data["total_pot"]
+    table_id = data["table_id"]
+
+    card_on_table = ', '.join(list(map(lambda card: CardMap[card], data["cards_on_table"])))
+
+    game_info_window.addstr(1, 1, f'Table ID: {table_id}')
+    game_info_window.addstr(2, 1, f'Bet: {bet_rate} points')
+    game_info_window.addstr(3, 1, f'Common cards: {card_on_table}')
+    game_info_window.addstr(4, 1, f'Pot: {total_pot} points')
+
+    game_info_window.border('|', '|', '-', '-', '+', '+', '+', '+')
+    game_info_window.refresh()
+
+
 def update_player_info(data):
-    global player_info_window
     if player_info_window is None:
         return
 
-    player_info_window.erase()
+    player_info_window.clear()
     pil = data['player_list']
 
     for pindex in range(len(pil)):
         p = pil[pindex]
-        player_info_window.addstr(pindex, 1, 'Player {}: {}'.format(p['name'], p['role']))
+        card1 = CardMap[p['cards_in_hand'][0]]
+        card2 = CardMap[p['cards_in_hand'][1]]
+
+        player_info_window.addstr(pindex + 1, 1, '[{}] {}: {}, {}'.format(p['role'], p['name'], card1, card2))
 
     player_info_window.border('|', '|', '-', '-', '+', '+', '+', '+')
     player_info_window.refresh()

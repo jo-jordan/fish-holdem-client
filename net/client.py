@@ -28,8 +28,7 @@ class NetClient:
     def __on_message(self, ws, message):
         self.dispatcher.on_receive(message)
 
-    def __on_error(self, ws, error):
-        print(error)
+    def __on_error(self, ws, error): pass
 
     def __on_close(self, ws, close_status_code, close_msg): pass
 
