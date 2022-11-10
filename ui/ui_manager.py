@@ -1,4 +1,7 @@
 import curses
+import time
+from _curses import KEY_ENTER
+
 from ui.cards import CardMap
 
 main_screen = None
@@ -6,11 +9,12 @@ game_info_window = None
 player_info_window = None
 user_window = None
 user_control_pad = None
+matching_room_window = None
 max_y = 0
 max_x = 0
 
 
-def __init_main_window():
+def init_main_window():
     global max_y, max_x, main_screen
     main_screen = curses.initscr()
     curses.start_color()  # enable color for highlighting menu options
@@ -71,8 +75,61 @@ def __init_user_window():
     user_window.getkey()
 
 
+def load_login_ui():
+    login_window = curses.newwin(2, 144, 0, 0)
+    login_window.clear()
+
+    text = 'Welcome, please tell me your name: '
+    len_of_text = len(text)
+    login_window.addstr(0, 0, text)
+    login_window.refresh()
+
+    login_window.keypad(True)
+
+    curses.echo(True)
+    username = login_window.getstr().decode('utf-8')
+    login_window.addstr(0, len_of_text, username)
+    login_window.refresh()
+    login_window.clear()
+    curses.noecho()
+    del login_window
+    return username
+
+
+def load_matching_table_ui():
+    global matching_room_window
+    animation = [
+        '',
+        '.',
+        '..',
+        '...',
+        '....',
+        '.....',
+        '......',
+    ]
+    matching_room_window = curses.newwin(2, 144, 0, 0)
+
+    counter = 0
+    idx = 0
+    while counter < 2:
+        if idx > len(animation) - 1:
+            counter += 1
+            idx = 0
+        matching_room_window.clear()
+        matching_room_window.addstr(0, 0, f'Table matching{animation[idx]}')
+        matching_room_window.refresh()
+        idx += 1
+        time.sleep(0.3)
+
+
+def unload_matching_table_ui():
+    global matching_room_window
+    if matching_room_window is not None:
+        matching_room_window.clear()
+        del matching_room_window
+
+
 def init_ui():
-    __init_main_window()
     __init_game_info_window()
     __init_player_info_window()
     __init_user_control_pad()

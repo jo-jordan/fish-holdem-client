@@ -2,7 +2,6 @@ import threading
 
 from game.game_controller import GameController
 from infra.dispatcher import Dispatcher
-from net.client import NetClient
 from ui import ui_manager
 
 
@@ -25,21 +24,19 @@ from ui import ui_manager
 # |pack_sender layer
 # |logic layer
 
-def init_net_client():
-    def run():
-        NetClient()
-    threading.Thread(target=run).start()
+controller = GameController()
 
 
 def init_dispatcher():
     dispatcher = Dispatcher()  # Singleton
-
-    controller = GameController()
     dispatcher.register_logic('game_info', controller.update_game_info)
     dispatcher.register_logic('player_info', controller.update_player_info)
 
 
+def start_game():
+    controller.start_game()
+
+
 if __name__ == '__main__':
-    init_net_client()
     init_dispatcher()
-    ui_manager.init_ui()
+    start_game()

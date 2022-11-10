@@ -4,32 +4,41 @@ import websocket
 
 from infra.dispatcher import Dispatcher
 
+dispatcher = Dispatcher()
 
-class NetClient:
-    ws = None
-    dispatcher = Dispatcher()  # Singleton
 
-    def __init__(self):
-        # websocket.enableTrace(True)
-        self.ws = websocket.WebSocketApp("ws://localhost:8080/echo",
-                                         on_open=self.__on_open,
-                                         on_message=self.__on_message,
-                                         on_error=self.__on_error,
-                                         on_close=self.__on_close)
+# ws://localhost:8080/login
+# ws://localhost:8080/game
+def create_instant_ws_client(url, headers):
 
-        def timer():
-            self.ws.send("w2w2w2w2w22")
-        threading.Timer(4, timer).start()
-        self.ws.run_forever(reconnect=5)
+    ws = websocket.WebSocket()
+    ws.connect(url, header=headers)
+    return ws
 
-    def send(self, data):
-        self.ws.send(data)
 
-    def __on_message(self, ws, message):
-        self.dispatcher.on_receive(message)
+def create_long_lived_ws_client(url):
+    # websocket.enableTrace(True)
+    ws = websocket.WebSocketApp(url,
+                                on_open=__on_open,
+                                on_message=__on_message,
+                                on_error=__on_error,
+                                on_close=__on_close)
+    ws.run_forever(reconnect=5)
+    return ws
 
-    def __on_error(self, ws, error): pass
 
-    def __on_close(self, ws, close_status_code, close_msg): pass
+def send(ws, data):
+    ws.send(data)
 
-    def __on_open(self, ws): pass
+
+def __on_message(ws, message):
+    dispatcher.on_receive(message)
+
+
+def __on_error(self, ws, error): pass
+
+
+def __on_close(self, ws, close_status_code, close_msg): pass
+
+
+def __on_open(self, ws): pass
