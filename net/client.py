@@ -16,29 +16,30 @@ def create_instant_ws_client(url, headers):
     return ws
 
 
-def create_long_lived_ws_client(url):
-    # websocket.enableTrace(True)
-    ws = websocket.WebSocketApp(url,
-                                on_open=__on_open,
-                                on_message=__on_message,
-                                on_error=__on_error,
-                                on_close=__on_close)
-    ws.run_forever(reconnect=5)
-    return ws
+def create_long_lived_ws_client(url, headers):
+    def run():
 
-
-def send(ws, data):
-    ws.send(data)
+        # websocket.enableTrace(True)
+        ws = websocket.WebSocketApp(url,
+                                    on_open=__on_open,
+                                    on_message=__on_message,
+                                    on_error=__on_error,
+                                    on_close=__on_close,
+                                    header=headers
+                                    )
+        ws.run_forever(reconnect=5)
+    threading.Thread(target=run).start()
 
 
 def __on_message(ws, message):
     dispatcher.on_receive(message)
 
 
-def __on_error(self, ws, error): pass
+def __on_error(ws, error): pass
 
 
-def __on_close(self, ws, close_status_code, close_msg): pass
+def __on_close(ws, close_status_code, close_msg): pass
 
 
-def __on_open(self, ws): pass
+def __on_open(ws):
+    ws.send('request start')

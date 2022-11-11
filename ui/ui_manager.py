@@ -64,7 +64,7 @@ def __init_user_control_pad():
     user_control_pad.refresh()
 
 
-def __init_user_window():
+def init_user_window():
     global user_window
     user_window = curses.newwin(2, 144, max_y - 2, 0)
     user_window.clear()
@@ -72,7 +72,9 @@ def __init_user_window():
     user_window.addstr(0, 0, 'Your cards: {}, {}'.format('Club-J', 'Spades-2'))
     user_window.addstr(1, 0, 'Please wait...')
     user_window.refresh()
-    user_window.getkey()
+
+    while True:
+        user_window.getkey()
 
 
 def load_login_ui():
@@ -111,7 +113,7 @@ def load_matching_table_ui():
 
     counter = 0
     idx = 0
-    while counter < 2:
+    while counter < 1:
         if idx > len(animation) - 1:
             counter += 1
             idx = 0
@@ -119,7 +121,7 @@ def load_matching_table_ui():
         matching_room_window.addstr(0, 0, f'Table matching{animation[idx]}')
         matching_room_window.refresh()
         idx += 1
-        time.sleep(0.3)
+        time.sleep(0.2)
 
 
 def unload_matching_table_ui():
@@ -133,7 +135,6 @@ def init_ui():
     __init_game_info_window()
     __init_player_info_window()
     __init_user_control_pad()
-    __init_user_window()
 
 
 def update_game_info(data):

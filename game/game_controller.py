@@ -7,9 +7,6 @@ import net.client
 from ui import ui_manager
 
 
-
-
-
 class GameController:
     TOKEN = ''
 
@@ -43,22 +40,10 @@ class GameController:
         login_thread.join()
 
         ui_manager.load_matching_table_ui()
-
-        def run_matching_table():
-            ws = net.client.create_instant_ws_client('ws://localhost:8080/matching_table', [f'token: {self.TOKEN}'])
-            ws.send(json.dumps(
-                {
-                    'username': username
-                }
-            ))
-            result_data = ws.recv()
-            result = json.loads(result_data)
-            ws.close(timeout=1)
-        match_table_thread = threading.Thread(target=run_matching_table)
-        match_table_thread.start()
-        match_table_thread.join()
-
         ui_manager.unload_matching_table_ui()
 
+        net.client.create_long_lived_ws_client('ws://localhost:8080/game', [f'token: {self.TOKEN}'])
+
         ui_manager.init_ui()
+        ui_manager.init_user_window()  # we block here
 
