@@ -42,4 +42,5 @@ def __on_close(ws, close_status_code, close_msg): pass
 
 
 def __on_open(ws):
-    ws.send('request start')
+
+    ws.send('{"req_type": "MatchTable", "data": {}}')

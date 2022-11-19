@@ -29,7 +29,7 @@ controller = GameController()
 
 def init_dispatcher():
     dispatcher = Dispatcher()  # Singleton
-    dispatcher.register_logic('game_info', controller.update_game_info)
+    dispatcher.register_logic('table_info', controller.update_table_info)
     dispatcher.register_logic('player_info', controller.update_player_info)
 
 

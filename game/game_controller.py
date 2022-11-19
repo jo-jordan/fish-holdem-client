@@ -16,8 +16,8 @@ class GameController:
     def update_player_info(self, data):
         ui_manager.update_player_info(data)
 
-    def update_game_info(self, data):
-        ui_manager.update_game_info(data)
+    def update_table_info(self, data):
+        ui_manager.update_table_info(data)
 
     def start_game(self):
         ui_manager.init_main_window()
@@ -42,7 +42,8 @@ class GameController:
         ui_manager.load_matching_table_ui()
         ui_manager.unload_matching_table_ui()
 
-        net.client.create_long_lived_ws_client('ws://localhost:8080/game', [f'token: {self.TOKEN}'])
+        token_header = "Game-Token: " + self.TOKEN
+        net.client.create_long_lived_ws_client('ws://localhost:8080/game', [token_header])
 
         ui_manager.init_ui()
         ui_manager.init_user_window()  # we block here

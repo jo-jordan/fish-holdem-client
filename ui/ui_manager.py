@@ -1,11 +1,10 @@
 import curses
 import time
-from _curses import KEY_ENTER
 
 from ui.cards import CardMap
 
 main_screen = None
-game_info_window = None
+table_info_window = None
 player_info_window = None
 user_window = None
 user_control_pad = None
@@ -30,16 +29,16 @@ def init_main_window():
 
 
 def __init_game_info_window():
-    global game_info_window
-    game_info_window = curses.newwin(6, 96, 0, 0)
+    global table_info_window
+    table_info_window = curses.newwin(6, 96, 0, 0)
     # Clear screen
-    game_info_window.clear()
-    game_info_window.addstr(1, 1, 'Bet: ?/? points')
-    game_info_window.addstr(2, 1, 'Common cards: ?')
-    game_info_window.addstr(3, 1, 'Pot: 0 points')
+    table_info_window.clear()
+    table_info_window.addstr(1, 1, 'Bet: ?/? points')
+    table_info_window.addstr(2, 1, 'Common cards: ?')
+    table_info_window.addstr(3, 1, 'Pot: 0 points')
 
-    game_info_window.border('|', '|', '-', '-', '+', '+', '+', '+')
-    game_info_window.refresh()
+    table_info_window.border('|', '|', '-', '-', '+', '+', '+', '+')
+    table_info_window.refresh()
 
 
 def __init_player_info_window():
@@ -137,24 +136,24 @@ def init_ui():
     __init_user_control_pad()
 
 
-def update_game_info(data):
-    if game_info_window is None:
+def update_table_info(data):
+    if table_info_window is None:
         return
 
-    game_info_window.clear()
+    table_info_window.clear()
     bet_rate = data["bet_rate"]
     total_pot = data["total_pot"]
     table_id = data["table_id"]
 
     card_on_table = ', '.join(list(map(lambda card: CardMap[card], data["cards_on_table"])))
 
-    game_info_window.addstr(1, 1, f'Table ID: {table_id}')
-    game_info_window.addstr(2, 1, f'Bet: {bet_rate} points')
-    game_info_window.addstr(3, 1, f'Common cards: {card_on_table}')
-    game_info_window.addstr(4, 1, f'Pot: {total_pot} points')
+    table_info_window.addstr(1, 1, f'Table ID: {table_id}')
+    table_info_window.addstr(2, 1, f'Bet: {bet_rate} points')
+    table_info_window.addstr(3, 1, f'Common cards: {card_on_table}')
+    table_info_window.addstr(4, 1, f'Pot: {total_pot} points')
 
-    game_info_window.border('|', '|', '-', '-', '+', '+', '+', '+')
-    game_info_window.refresh()
+    table_info_window.border('|', '|', '-', '-', '+', '+', '+', '+')
+    table_info_window.refresh()
 
 
 def update_player_info(data):
@@ -166,10 +165,14 @@ def update_player_info(data):
 
     for pindex in range(len(pil)):
         p = pil[pindex]
-        card1 = CardMap[p['cards_in_hand'][0]]
-        card2 = CardMap[p['cards_in_hand'][1]]
 
-        player_info_window.addstr(pindex + 1, 1, '[{}] {}: {}, {}'.format(p['role'], p['name'], card1, card2))
+        card1 = ''
+        card2 = ''
+        if 'cards_in_hand' in p and p['cards_in_hand'] is not None and len(p['cards_in_hand']) == 2:
+            card1 = CardMap[p['cards_in_hand'][0]]
+            card2 = CardMap[p['cards_in_hand'][1]]
+
+        player_info_window.addstr(pindex + 1, 1, '[{}] {}: {}, {}'.format(p['role'], p['username'], card1, card2))
 
     player_info_window.border('|', '|', '-', '-', '+', '+', '+', '+')
     player_info_window.refresh()
