@@ -166,8 +166,8 @@ def update_player_info(data):
     for pindex in range(len(pil)):
         p = pil[pindex]
 
-        card1 = ''
-        card2 = ''
+        card1 = '*'
+        card2 = '*'
         if 'cards_in_hand' in p and p['cards_in_hand'] is not None and len(p['cards_in_hand']) == 2:
             card1 = CardMap[p['cards_in_hand'][0]]
             card2 = CardMap[p['cards_in_hand'][1]]
