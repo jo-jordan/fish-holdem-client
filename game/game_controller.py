@@ -9,6 +9,7 @@ from ui import ui_manager
 
 class GameController:
     TOKEN = ''
+    PLAYER_ID = 0
 
     def __init__(self):
         pass
@@ -34,6 +35,7 @@ class GameController:
             result_data = ws.recv()
             result = json.loads(result_data)
             self.TOKEN = result['token']
+            self.PLAYER_ID = result['player_id']
             ws.close(timeout=1)
         login_thread = threading.Thread(target=run_login)
         login_thread.start()
@@ -43,7 +45,8 @@ class GameController:
         ui_manager.unload_matching_table_ui()
 
         token_header = "Game-Token: " + self.TOKEN
-        net.client.create_long_lived_ws_client('ws://localhost:8080/game', [token_header])
+        player_id_header = f"Player-Id: {self.PLAYER_ID}"
+        net.client.create_long_lived_ws_client('ws://localhost:8080/game', [token_header, player_id_header])
 
         ui_manager.init_ui()
         ui_manager.init_user_window()  # we block here
